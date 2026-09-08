@@ -1,0 +1,19 @@
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Python and notebook artifacts
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+
+# Local analysis outputs
+*.log
+*.tmp
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
