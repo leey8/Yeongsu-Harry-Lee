@@ -23,3 +23,6 @@ __pycache__/
 ~$*.docx
 ~$*.pptx
 Thumbs.db
+# Local AI tool working copies (not part of the project)
+copilot-worktrees/
+/Yeongsu-Harry-Lee/
