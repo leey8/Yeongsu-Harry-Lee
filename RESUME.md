@@ -1,8 +1,6 @@
 # YEONGSU LEE (Harry)
 
 **Contact Information:**
-* **Address:** 1500 Rycroft St. 1410, Honolulu, HI, 96814
-* **Phone:** +1 808-256-5263
 * **Email:** leey8@hawaii.edu
 
 ---
