@@ -2,12 +2,12 @@
 type: brief
 engagement: perfect-competition
 capability: marginal-analysis
-date: 2026-08-24
-status: committed          # committed | superseded
+date: 2026-09-26
+status: committed
 hypothesis: "Mesclun & carrot-heavy mix; minimizing compounding labor penalties yields higher net profit"
 ---
 
-# <Engagement> — Engagement brief
+# Perfect Competition — engagement brief
 
 ## The problem
 The farmer must decide how to allocate 64 available land beds across three crops (tomatoes, carrots, and mesclun) for the upcoming 36-week season. 
@@ -20,9 +20,10 @@ Choices are constrained by total farm land capacity (64 beds, which is less than
 
 ## What I am assuming
 The farm is a price taker in a perfectly competitive market and cannot move market prices regardless of volume produced. 
-Total labor hours for $q$ beds of a crop follow the compounding labor curve Labor(q) = q × hrs/wk/bed × 36 × (1 + dim)q. 
+Total labor hours for `q` beds of a crop follow the compounding labor curve Labor(q) = q × hrs/wk/bed × 36 × (1 + dim)^q.
 Temporary workers can be hired incrementally as needed at $17.36/hr up to their capacity limit.
 
+The assumptions I would most want to test if I had more time
 Risk of a market price collapse during periods of high-volume shipments.
 Potential to reduce the rate of diminishing returns through increased operational proficiency and process improvements.
 Risk of fluctuations in yield and costs for individual crops due to factors such as weather, pests, and diseases.
