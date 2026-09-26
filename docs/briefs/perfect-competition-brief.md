@@ -7,7 +7,7 @@ status: committed          # committed | superseded
 hypothesis: "Mesclun & carrot-heavy mix; minimizing compounding labor penalties yields higher net profit"
 ---
 
-# <Engagement> — engagement brief
+# <Engagement> — Engagement brief
 
 ## The problem
 The farmer must decide how to allocate 64 available land beds across three crops (tomatoes, carrots, and mesclun) for the upcoming 36-week season. 
