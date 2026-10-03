@@ -32,6 +32,8 @@ Risk of fluctuations in yield and costs for individual crops due to factors such
 I expect 30 mesclun beds, 20 carrot beds, and 14 tomato beds.
 Because mesclun (1.25%) and carrots (2.5%) have drastically lower diminishing-returns rates than tomatoes (10%), ensuring that avoiding the severe compounding labor penalty will keep marginal costs low and deliver a higher seasonal net profit. 
 Even though tomatoes yield much higher revenue per bed ($8,800 vs. $2,700 for mesclun and $2,094 for carrots), their higher base labor demand (2.5 hrs/wk vs. 1.25 and 0.833 hrs/wk) means the 10% penalty multiplies a larger base, causing marginal cost to overtake marginal revenue past 14 beds.
+*14th bed: Revenue +$8,800 / Labor +746 hrs ($12,945) / Fertilizer +$880 → Marginal Cost $13,825
+*15th bed: Revenue +$8,800 / Labor +854 hrs ($14,833) / Fertilizer +$880 → Marginal Cost $15,713
 
 ## How I would know I was wrong
-This hypothesis will be falsified if the Solver model shows that the optimal tomato allocation outside the range of 12 to 16 beds while scaling back mesclun or carrot beds.
+This hypothesis will be falsified if the Solver model shows that the optimal tomato allocation falls outside the range of 12 to 16 beds while scaling back mesclun or carrot beds.
