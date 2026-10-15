@@ -57,8 +57,7 @@ The workbook `model.xlsx` consists of two worksheets:
 All calculation logic must use named-range notation. Cell addresses (e.g., `D5`, `E10`) are strictly prohibited.
 
 1. **Labor Hours for $q$ Beds of a Crop**:
-   $$\text{LABOR\_HRS}(q) = q \times \text{HRS\_PER\_BED} \times \text{SEASON\_WEEKS} \times (1 + \text{DIM\_PCT})^q$$
-   * Specifically: `LABOR_HRS(q) = q * HRS_PER_BED * SEASON_WEEKS * (1 + DIM_PCT)^q`
+   `LABOR_HRS(q) = q * HRS_PER_BED * SEASON_WEEKS * (1 + DIM_PCT)^q`
 
 2. **Carrot Base Hours Formula**:
    `HRS_PER_BED_CARROTS = 5/6`
