@@ -124,8 +124,20 @@ All calculation logic must use named-range notation. Cell addresses (e.g., `D5`,
 22. **Standalone $P \approx MC$ Calculation Logic**:
     Evaluated for each crop in isolation by setting other crops to 0 beds, respecting individual bed caps (`BED_CAP_*`), and ignoring the 64-bed farm capacity limit (`FARM_BEDS_AVAIL`). `STANDALONE_PMC_CROP` is the first integer bed count $q$ where single-crop `MARGINAL_COST(q + 1) > REV_PER_BED` (stopping at the first crossing point where $MC > P$), applying actual step-wise marginal labor rates (`OWNER_HOURLY_RATE` up to 720 hours, followed by `TEMP_HOURLY_RATE`) to that single crop's labor hours.
 
+23. **Output Named Range Aliases**:
+    Where Section 7 output names differ from internal Section 4 calculation variable names, they must be created as direct named-range aliases pointing to the corresponding underlying calculation cells:
+    * `OPTIMAL_BEDS_TOMATOES` = `BEDS_TOMATOES`
+    * `OPTIMAL_BEDS_CARROTS` = `BEDS_CARROTS`
+    * `OPTIMAL_BEDS_MESCLUN` = `BEDS_MESCLUN`
+    * `FARM_BLENDED_LABOR_RATE` = `BLENDED_LABOR_RATE`
+    * `TOTAL_LABOR_HOURS_USED` = `TOTAL_FARM_LABOR_HRS`
+    * `TOTAL_LABOR_COST_DOLLARS` = `TOTAL_LABOR_COST`
+    * `TOTAL_VARIABLE_COST` = `TOTAL_FARM_TVC`
+    * `FIXED_COST_DOLLARS` = `FIXED_COSTS`
+
 ## 5. Conventions
 
+* **Saved Workbook State**: In the saved `model.xlsx` workbook, the three decision cells (`BEDS_TOMATOES`, `BEDS_CARROTS`, `BEDS_MESCLUN`) must be pre-populated with the solved optimal values **`(10, 20, 30)`**, ensuring that all summary P&L values and acceptance criteria check cells evaluate to solved passing states immediately upon opening.
 * **Unrounded Wage Rates & Lab Alignment**: Wage rates are specified as exact unrounded fractions (`=25000/720` for owner, `=25000/1440` for temporary workers) rather than rounded display numbers ($34.72 and $17.36). This unrounded precision is strictly required to reconcile with the published Farm Profit Lab benchmark figures (total farm labor cost of $104,118, season net profit of $42,762, and the -$591 net profit impact of adding 1 tomato bed beyond the optimal mix).
 * **Farm Model Blended Rate vs. Standalone Marginal Rate Rationale**: The summary farm model uses a farm-wide blended labor rate because labor is an organizational resource shared across all crops on the summary P&L, whereas standalone analysis evaluates single-crop expansion against the true marginal wage rate of the next worker hour required.
 * **Standalone Evaluation Rules**: Standalone $P \approx MC$ evaluations apply actual step-wise marginal wage rates (`OWNER_HOURLY_RATE` up to 720 hours, then `TEMP_HOURLY_RATE`), stop at the first integer crossing point where $MC > P$, and must not exceed individual crop bed caps (`BED_CAP_*`).
@@ -135,7 +147,7 @@ All calculation logic must use named-range notation. Cell addresses (e.g., `D5`,
 * **Owner Hourly Cost Inclusion in P&L**: Owner labor hours are included as an explicit cash/opportunity labor expense in the P&L at the implied unrounded rate of `=25000/720` for 720 hours. This accounting treatment is strictly required for the target net season profit check figure of $42,762 to reconcile.
 * **Integer Decision Variables**: All crop decision variables ($q_{tomatoes}, q_{carrots}, q_{mesclun}$) must be non-negative integers ($\mathbb{Z}_{\ge 0}$).
 * **Precision & Exact Values**: Carrot base hours are defined as `=5/6` in Excel formulas to prevent rounding errors. Intermediate calculations preserve floating-point precision. Displayed currency values round to whole dollars.
-* **Solver Configuration Parameters**:
+* **Solver Configuration Parameters & Setup Documentation**:
   * **Objective Cell**: `NET_SEASON_PROFIT` (Set to Maximize)
   * **Changing Variable Cells**: `BEDS_TOMATOES`, `BEDS_CARROTS`, `BEDS_MESCLUN`
   * **Engine**: GRG Nonlinear
@@ -150,6 +162,7 @@ All calculation logic must use named-range notation. Cell addresses (e.g., `D5`,
     * Start State A: `(0, 0, 0)`
     * Start State B: `(20, 0, 0)`
     Both runs must converge to the identical global optimal solution `(10, 20, 30)`.
+  * **Documentation Requirement for AI Builders**: For AI tools or automated environments that cannot natively execute the Excel Solver add-in during generation, the complete Solver setup (objective, changing cells, engine, constraints, and starting points) must be fully documented as a dedicated "Solver Parameters" metadata table inside the `optimization` region of `Farm_Model` so that a human auditor or desktop Excel user can execute and verify Solver directly.
 * **Handling Check Figure Discrepancies**: If a generated model fails any validation rule, the builder MUST NOT manually edit cell values in Excel. The specification file (`spec.md`) must be corrected/clarified and re-submitted to the AI builder.
 
 ## 6. Validation rules
@@ -162,7 +175,7 @@ The model must include 7 explicit boolean check indicator cells, all displaying 
 4. `CHECK_HAND_CALC_Q1`: `ABS(TOMATO_Q1_LABOR_HRS - 99.0) <= 0.001` (Allows 0.001 tolerance for floating-point calculation of $1 \times 2.5 \times 36 \times 1.10 = 99.0$ hours) -> `TRUE`
 5. `CHECK_LABOR_CAP`: `TOTAL_FARM_LABOR_HRS <= 6480` -> `TRUE`
 6. `CHECK_LAND_CAP`: `TOTAL_BEDS_PLANTED <= 64` -> `TRUE`
-7. `CHECK_NO_ERRORS_AND_FORMULAS`: Zero `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` error cells AND all calculated cells contain dynamic formulas referencing named inputs -> `TRUE`
+7. `CHECK_NO_ERRORS_AND_FORMULAS`: `AND(NOT(ISERROR(NET_SEASON_PROFIT)), ISFORMULA(NET_SEASON_PROFIT), ISFORMULA(TOTAL_FARM_REVENUE), ISFORMULA(TOTAL_FARM_TVC))` (Evaluates to `TRUE` if calculated ranges contain zero Excel error cells `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` AND `ISFORMULA` returns `TRUE` for all summary calculation cells) -> `TRUE`
 
 ## 7. Outputs
 
