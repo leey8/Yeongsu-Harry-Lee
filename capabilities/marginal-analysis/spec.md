@@ -218,6 +218,13 @@ The model must include 7 explicit boolean check indicator cells, all displaying 
 | Check Executed | Target / Expectation | Result Observed | Pass / Fail | Action Taken / Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | Hand calc ($q=1$ Tomato) | 99.0 hours | 99.0 hours | Pass | Catches a dropped exponent in the labor formula |
-| Farm Profit Lab Cross-check | Match intermediate values | Lab: labor $104,118 / profit $42,762 / +1 tomato bed −$591. My first build with rounded $34.72 and $17.36 gave $104,111.67 and $42,768.33 | Fail → Fixed | Traced the $6.33 gap
+| Farm Profit Lab Cross-check | Match intermediate values | Lab: labor $104,118 / profit $42,762 / +1 tomato bed −$591. My first build with rounded $34.72 and $17.36 gave $104,111.67 and $42,768.33 | Fail → Fixed | Traced the $6.33 gap to the rounded wage rates; redefined both as `=25000/720` and `=25000/1440` in §2. Catches an input taken from a display value instead of its source |
+| Dual Solver Start Points | (0,0,0) and (20,0,0) converge | Both (0,0,0) and (20,0,0) converged to (10, 20, 30) with $42,762 profit | Pass | Catches a local optimum presented as the global one |
+| Check Figures Reconciled | 10/20/30 beds, $42,762 | 10/20/30 beds, $42,762 net profit, standalone 10/10/6 | Pass | Catches an error anywhere in the chain, in aggregate |
+| Formula Integrity Audit | No hardcoded numbers in formulas | Spot-checked 3 cells (`marginal_cost` Tomato Bed 6, `BLENDED_LABOR_RATE`, `NET_SEASON_PROFIT`); named ranges verified in formula bar, zero error cells, `ISFORMULA` TRUE | Pass | Catches a value that is right today and wrong when an input changes |
+
+### Additional Audit Observations
+* **Tomato MC Dip Location**: Tomato MC dip located at bed 6 of the tomato schedule. This confirmed the specification prediction from §4-14 ("around 6 beds"). Noted for Stage 1.3 analysis; not explained here.
+* **Workbook Saved State & Constraint Verification**: Decision cells (`BEDS_TOMATOES`, `BEDS_CARROTS`, `BEDS_MESCLUN`) were pre-populated to the optimal solution `(10, 20, 30)` upon file save. All 7 explicit constraint and validation check cells in the Excel workbook evaluate to `TRUE` (Green) in the working environment.
 
 * The workbook was generated from spec commit c27726e; the later spec commit changed only the §6.7 wording and did not affect the model.
