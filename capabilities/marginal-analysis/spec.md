@@ -131,6 +131,8 @@ All calculation logic must use named-range notation. Cell addresses (e.g., `D5`,
     * `OPTIMAL_BEDS_MESCLUN` = `BEDS_MESCLUN`
     * `FARM_BLENDED_LABOR_RATE` = `BLENDED_LABOR_RATE`
     * `TOTAL_LABOR_HOURS_USED` = `TOTAL_FARM_LABOR_HRS`
+    * `OWNER_HOURS_UTILIZED` = `OWNER_HRS_USED`
+    * `TEMP_WORKER_HOURS_UTILIZED` = `TEMP_HRS_NEEDED`
     * `TOTAL_LABOR_COST_DOLLARS` = `TOTAL_LABOR_COST`
     * `TOTAL_VARIABLE_COST` = `TOTAL_FARM_TVC`
     * `FIXED_COST_DOLLARS` = `FIXED_COSTS`
@@ -175,7 +177,7 @@ The model must include 7 explicit boolean check indicator cells, all displaying 
 4. `CHECK_HAND_CALC_Q1`: `ABS(TOMATO_Q1_LABOR_HRS - 99.0) <= 0.001` (Allows 0.001 tolerance for floating-point calculation of $1 \times 2.5 \times 36 \times 1.10 = 99.0$ hours) -> `TRUE`
 5. `CHECK_LABOR_CAP`: `TOTAL_FARM_LABOR_HRS <= 6480` -> `TRUE`
 6. `CHECK_LAND_CAP`: `TOTAL_BEDS_PLANTED <= 64` -> `TRUE`
-7. `CHECK_NO_ERRORS_AND_FORMULAS`: `AND(NOT(ISERROR(NET_SEASON_PROFIT)), ISFORMULA(NET_SEASON_PROFIT), ISFORMULA(TOTAL_FARM_REVENUE), ISFORMULA(TOTAL_FARM_TVC))` (Evaluates to `TRUE` if calculated ranges contain zero Excel error cells `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` AND `ISFORMULA` returns `TRUE` for all summary calculation cells) -> `TRUE`
+7. `CHECK_NO_ERRORS_AND_FORMULAS`: `AND(SUMPRODUCT(--ISERROR(CALCULATED_RANGES)) = 0, SUMPRODUCT(--ISFORMULA(CALCULATED_RANGES)) = PRODUCT(ROWS(CALCULATED_RANGES), COLUMNS(CALCULATED_RANGES)))` (Evaluates across all calculated regions—including `cost_structure`, `optimization` summary P&L, and the bed-by-bed `marginal_cost` schedules. Evaluates to `TRUE` if and only if zero Excel error cells `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` exist in calculated ranges AND `ISFORMULA` returns `TRUE` for every single cell in the calculated ranges, catching pasted static numbers) -> `TRUE`
 
 ## 7. Outputs
 
