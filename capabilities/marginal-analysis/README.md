@@ -8,3 +8,5 @@ defines the intended inputs and interpretation.
 
 - `spec.md` — scope, assumptions, inputs, and outputs
 - `model.xlsx` — workbook model
+
+Exercised in: perfect-competition (Stage 1.2) — see `docs/briefs/perfect-competition-brief.md`
