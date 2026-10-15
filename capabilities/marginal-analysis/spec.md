@@ -35,10 +35,10 @@ This model determines the optimal seasonal allocation of 64 available land beds 
 | `SEASON_WEEKS` | 36 | weeks | Case Scenario Table 2 ("The Givens") |
 | `FIXED_COSTS` | 20,000 | USD / season | Case Scenario Table 2 ("The Givens") |
 | `OWNER_MAX_HRS` | 720 | hours / season | Case Scenario Table 2 ("The Givens") |
-| `OWNER_HOURLY_RATE` | 34.72 | USD / hour | Case Scenario Table 2 (implied rate stated in case) |
+| `OWNER_HOURLY_RATE` | =25000/720 | USD / hour | Case Scenario Table 2 (implied; the stated $34.72 is a rounded display value) |
 | `TEMP_WORKERS_MAX` | 4 | workers | Case Scenario Table 2 ("The Givens") |
 | `TEMP_WORKER_MAX_HRS` | 1,440 | hours / worker | Case Scenario Table 2 ("The Givens") |
-| `TEMP_HOURLY_RATE` | 17.36 | USD / hour | Case Scenario Table 2 ("The Givens") |
+| `TEMP_HOURLY_RATE` | =25000/1440 | USD / hour | Case Scenario Table 2 (implied; the stated $17.36 is a rounded display value) |
 | `TOTAL_LABOR_CAP` | 6,480 | hours | Case Scenario Table 2 (720 + 4 × 1,440 hrs) |
 
 ## 3. Structure
@@ -122,14 +122,17 @@ All calculation logic must use named-range notation. Cell addresses (e.g., `D5`,
     `TEMP_WORKERS_HIRED_EQUIVALENT = TEMP_HRS_NEEDED / TEMP_WORKER_MAX_HRS` *(Unrounded decimal fraction)*
 
 22. **Standalone $P \approx MC$ Calculation Logic**:
-    Evaluated for each crop in isolation by setting other crops to 0 beds and ignoring the 64-bed farm capacity limit (`FARM_BEDS_AVAIL`). `STANDALONE_PMC_CROP` is the largest integer bed count $q$ where single-crop `MARGINAL_COST(q) <= REV_PER_BED` and `MARGINAL_COST(q + 1) > REV_PER_BED`, applying the owner-to-temp labor rate cascade for that single crop's hours.
+    Evaluated for each crop in isolation by setting other crops to 0 beds, respecting individual bed caps (`BED_CAP_*`), and ignoring the 64-bed farm capacity limit (`FARM_BEDS_AVAIL`). `STANDALONE_PMC_CROP` is the first integer bed count $q$ where single-crop `MARGINAL_COST(q + 1) > REV_PER_BED` (stopping at the first crossing point where $MC > P$), applying actual step-wise marginal labor rates (`OWNER_HOURLY_RATE` up to 720 hours, followed by `TEMP_HOURLY_RATE`) to that single crop's labor hours.
 
 ## 5. Conventions
 
-* **Owner Priority (Permanent Labor First)**: The owner's 720 field hours (implied rate of $34.72/hr) are always consumed first before hiring temporary workers. Temporary workers cover any remaining labor hours at $17.36/hr up to their maximum capacity of 5,760 total hours (4 workers $\times$ 1,440 hours).
-* **Hourly Billing for Temporary Workers**: Temporary labor is billed strictly per hour worked ($17.36/hr). Workers are NOT hired in indivisible 1,440-hour block contracts. The "up to 4 temporary workers" constraint is enforced as `TEMP_HRS_NEEDED <= 5760`.
+* **Unrounded Wage Rates & Lab Alignment**: Wage rates are specified as exact unrounded fractions (`=25000/720` for owner, `=25000/1440` for temporary workers) rather than rounded display numbers ($34.72 and $17.36). This unrounded precision is strictly required to reconcile with the published Farm Profit Lab benchmark figures (total farm labor cost of $104,118, season net profit of $42,762, and the -$591 net profit impact of adding 1 tomato bed beyond the optimal mix).
+* **Farm Model Blended Rate vs. Standalone Marginal Rate Rationale**: The summary farm model uses a farm-wide blended labor rate because labor is an organizational resource shared across all crops on the summary P&L, whereas standalone analysis evaluates single-crop expansion against the true marginal wage rate of the next worker hour required.
+* **Standalone Evaluation Rules**: Standalone $P \approx MC$ evaluations apply actual step-wise marginal wage rates (`OWNER_HOURLY_RATE` up to 720 hours, then `TEMP_HOURLY_RATE`), stop at the first integer crossing point where $MC > P$, and must not exceed individual crop bed caps (`BED_CAP_*`).
+* **Owner Priority (Permanent Labor First)**: The owner's 720 field hours (implied rate `=25000/720`) are always consumed first before hiring temporary workers. Temporary workers cover any remaining labor hours at `=25000/1440` up to their maximum capacity of 5,760 total hours (4 workers $\times$ 1,440 hours).
+* **Hourly Billing for Temporary Workers**: Temporary labor is billed strictly per hour worked (`=25000/1440` per hour). Workers are NOT hired in indivisible 1,440-hour block contracts. The "up to 4 temporary workers" constraint is enforced as `TEMP_HRS_NEEDED <= 5760`.
 * **Blended Labor Rate Allocation**: P&L schedules and $MC$ tables allocate labor costs using the farm-wide blended hourly labor rate (`TOTAL_LABOR_COST / TOTAL_FARM_LABOR_HRS`).
-* **Owner Hourly Cost Inclusion in P&L**: Owner labor hours are included as an explicit cash/opportunity labor expense in the P&L at the implied rate of $34.72/hr for 720 hours. This accounting treatment is strictly required for the target net season profit check figure of $42,762 to reconcile.
+* **Owner Hourly Cost Inclusion in P&L**: Owner labor hours are included as an explicit cash/opportunity labor expense in the P&L at the implied unrounded rate of `=25000/720` for 720 hours. This accounting treatment is strictly required for the target net season profit check figure of $42,762 to reconcile.
 * **Integer Decision Variables**: All crop decision variables ($q_{tomatoes}, q_{carrots}, q_{mesclun}$) must be non-negative integers ($\mathbb{Z}_{\ge 0}$).
 * **Precision & Exact Values**: Carrot base hours are defined as `=5/6` in Excel formulas to prevent rounding errors. Intermediate calculations preserve floating-point precision. Displayed currency values round to whole dollars.
 * **Solver Configuration Parameters**:
