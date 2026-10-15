@@ -177,7 +177,17 @@ The model must include 7 explicit boolean check indicator cells, all displaying 
 4. `CHECK_HAND_CALC_Q1`: `ABS(TOMATO_Q1_LABOR_HRS - 99.0) <= 0.001` (Allows 0.001 tolerance for floating-point calculation of $1 \times 2.5 \times 36 \times 1.10 = 99.0$ hours) -> `TRUE`
 5. `CHECK_LABOR_CAP`: `TOTAL_FARM_LABOR_HRS <= 6480` -> `TRUE`
 6. `CHECK_LAND_CAP`: `TOTAL_BEDS_PLANTED <= 64` -> `TRUE`
-7. `CHECK_NO_ERRORS_AND_FORMULAS`: `AND(SUMPRODUCT(--ISERROR(CALCULATED_RANGES)) = 0, SUMPRODUCT(--ISFORMULA(CALCULATED_RANGES)) = PRODUCT(ROWS(CALCULATED_RANGES), COLUMNS(CALCULATED_RANGES)))` (Evaluates across all calculated regions—including `cost_structure`, `optimization` summary P&L, and the bed-by-bed `marginal_cost` schedules. Evaluates to `TRUE` if and only if zero Excel error cells `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` exist in calculated ranges AND `ISFORMULA` returns `TRUE` for every single cell in the calculated ranges, catching pasted static numbers) -> `TRUE`
+7. `CHECK_NO_ERRORS_AND_FORMULAS`: `AND` of the following two tests, applied to each per-block named range `R` listed below:
+   `SUMPRODUCT(--ISERROR(R)) = 0, SUMPRODUCT(--ISFORMULA(R)) = PRODUCT(ROWS(R), COLUMNS(R))`
+   Because the calculated cells sit in non-contiguous blocks, each block has its own named range (a single multi-area name would make `ROWS`/`COLUMNS` return `#REF!`):
+   * `CALCULATED_RANGES_COST_STRUCTURE`: `cost_structure` calculations
+   * `CALCULATED_RANGES_OPT_CROPS`: per-crop calculated columns of the `optimization` crop table (labor hours through cumulative contribution)
+   * `CALCULATED_RANGES_OPT_TOTALS`: `optimization` summary P&L totals
+   * `CALCULATED_RANGES_OPT_CONSTRAINTS`: `optimization` constraint-check cells
+   * `CALCULATED_RANGES_STANDALONE`: `STANDALONE_PMC_*` cells
+   * `CALCULATED_RANGES_SCHED_TOMATOES`, `CALCULATED_RANGES_SCHED_CARROTS`, `CALCULATED_RANGES_SCHED_MESCLUN`: every formula column of each bed-by-bed `marginal_cost` schedule
+
+   Excluded: `inputs`, the decision cells, the typed bed-index column (q = 1 … cap) of each schedule, the Solver Parameters text table, and the `checks` block itself (to avoid a circular reference). Evaluates to `TRUE` if and only if zero Excel error cells `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?` exist in any listed range AND `ISFORMULA` returns `TRUE` for every single cell in every listed range, catching pasted static numbers -> `TRUE`
 
 ## 7. Outputs
 
