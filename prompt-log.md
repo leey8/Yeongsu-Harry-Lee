@@ -24,7 +24,7 @@ Record only AI sessions that materially change the repository. Include the date,
 
 - 2026-10-15 — The case states $34.72/hr and $17.36/hr, and taking those at face value left net profit $6.33 above the published check figure. Cross-checking the Farm Profit Lab (labor $104,118, profit $42,762, +1 tomato bed −$591) showed both are rounded displays of 25000/720 and 25000/1440. Redefined both rates as formulas in spec §2.
 
-# AI Reflection
+## AI Reflection
 
 ## 1. Where AI helped
 AI served as a structural editor and explanation tool. Using the course prompt, it critiqued my Brief draft and reviewed `spec.md`, exposing a major labor flaw (7,727 hours vs. the 6,480-hour cap). It detailed Excel Solver setup (enabling the add-in, objective cell, 6 constraints, dual start points) and hypothesized that my \$6.33 profit overshoot (\$42,768.33) stemmed from a rounded \$34.72 display instead of 25,000/720, proposing Farm Profit Lab verification.
